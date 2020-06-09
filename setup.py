@@ -13,7 +13,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/jungeebah/daami-cli.git",
     packages=setuptools.find_packages(),
-    install_requires=['Click','pyyaml','google-api-python-client','wikipedia'],
+    install_requires=['Click','pyyaml','google-api-python-client','wikipedia','configparser'],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
