@@ -1,9 +1,15 @@
+from __future__ import print_function, unicode_literals
+
 import click
 import configparser
 import os
 import sys
+import re
 import frontmatter
 from datetime import date
+import pprint
+from googleapiclient.discovery import build
+from PyInquirer import prompt, print_json
 
 def get_info(key):
     homde_dir = os.path.expanduser('~')
@@ -21,8 +27,49 @@ def create_review(project_folder,name,template):
     with open(os.path.join(project_folder,'_posts',review_date+'-'+name+'.md'), 'w') as f:
         f.write(frontmatter.dumps(post))
     click.echo(click.style(f'The page for review {name} has been created', fg='green'))
-        
 
+def prompt_result(answer):
+    return prompt(answer)
+
+def google_search(movie_name,api_key, language,template):
+    service = build("customsearch", "v1",
+            developerKey=api_key)
+
+    res = service.cse().list(
+      q=movie_name +" "+language,
+      cx='008985690000369000569:gswsgp4ncli',
+    ).execute()
+    if 'spelling' in res:
+        corrected_query = res['spelling']['correctedQuery'].replace(language,'')
+        correct_name = [
+            {
+                'type': 'confirm',
+                'name': 'changeMovieName',
+                'message': f'Instead of {movie_name} are you looking for {corrected_query}',
+                'default': False
+            }
+        ]
+        answers = prompt(correct_name)
+        if answers:
+            movie_name = corrected_query.strip()
+
+    movie_result = [{
+        'type': 'list',
+        'name': 'movie_name',
+        'message': 'Identify the name from the IMDb list',
+        'choices': [],
+        'filter': lambda val: val.lower()
+    }]
+    for item in res['items']:
+        movie_result[0]['choices'].append(item['title'])
+    movie_result[0]['choices'].append('other')
+    result = prompt_result(movie_result)
+    if result['movie_name'] == 'other':
+        click.echo(click.style('Nothing from IMDb to use', fg='green'))
+    else:
+        template['movie_name'] = re.sub(r'\([0-9]{4}\)\s*\-\s*imdb','',result['movie_name']).title()
+    
+    
 def get_project():
     return get_info('project')
 
@@ -116,10 +163,13 @@ def review(title,movie,time,project,language):
         sys.exit(1)
 
     # create a movie review post
-    template = {'layout': 'post','rating': 'change','title': title, 'language':language,'movie_name':movie ,
+    template = {'layout': 'post','rating': 'change','title': title.title(), 'language':language.capitalize(),'movie_name':movie.capitalize() ,
                  'movie': ['change'],'cast-crew': {'change':'change'}, 'date':'change', 'image': 'change', 
-                 'author': author,'tags':['change']}
+                 'author': author.title(),'tags':[language.title()]}
 
     #collecting other data for info
+    #searching imdb with google
+    click.echo(click.style(f'Looking through imdb for movie {movie}', fg='green'))
+    google_search(movie,api_key,language,template)
     # create a review file 
     # create_review(project_folder,title,template)
