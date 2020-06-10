@@ -3,6 +3,7 @@ import configparser
 import os
 import sys
 import frontmatter
+from datetime import date
 
 def get_info(key):
     homde_dir = os.path.expanduser('~')
@@ -13,11 +14,23 @@ def get_info(key):
     except:
         return 
 
+def create_review(project_folder,name,template):
+    review_date = date.today().strftime("%Y-%m-%d")
+    template['date'] = review_date
+    post = frontmatter.Post('nothing',**template)
+    with open(os.path.join(project_folder,'_posts',review_date+'-'+name+'.md'), 'w') as f:
+        f.write(frontmatter.dumps(post))
+    click.echo(click.style(f'The page for review {name} has been created', fg='green'))
+        
+
 def get_project():
     return get_info('project')
 
 def get_api():
     return get_info('api')
+
+def get_author():
+    return get_info('author')
 
 def all_files(folder_name:str):
     return [os.path.join(folder_name,x) for x in os.listdir(folder_name) 
@@ -28,7 +41,7 @@ def movie_present(movie_name:str, project_path: str):
     for file in file_list:
         with open(file) as f:
             movie_info = frontmatter.load(f)
-            if movie_info['title'].lower() == movie_name.lower():
+            if movie_info['movie_name'].lower() == movie_name.lower():
                 return True
     return False
 
@@ -59,12 +72,12 @@ def cli():
               default=get_project(), type=click.Path())
 @click.option('--api_key', '-p', prompt=True,
               default=get_api(), help='Api key to do google search check the channel to get one')
-
-def setup(project,api_key):
+@click.option('--author','-a',default=get_author(),prompt=True,help='The writter')
+def setup(project,api_key,author):
     '''Setup daami-cli to point to the given project'''
     homde_dir = os.path.expanduser('~')
     config = configparser.ConfigParser()
-    config['info'] = {'project': project, 'api': api_key}
+    config['info'] = {'project': project, 'api': api_key, 'author':author}
     with open(os.path.join(homde_dir,'.daamiReview'), 'w') as configfile:
         config.write(configfile)
 
@@ -84,6 +97,10 @@ def review(title,movie,time,project,language):
     # get the project folder
     project_folder = get_project()
     api_key = get_api()
+    author = get_author()
+    if not project_folder or not api_key or not author:
+        click.echo(click.style('The setup for the project is not complete rerun daami-cli setup', fg='red'))
+        sys.exit(1)
     # checks to make sure the project folder is present
     if not folder_Present(project_folder):
         click.echo(click.style('The project folder specified in setup is not present', fg='red'))
@@ -97,3 +114,12 @@ def review(title,movie,time,project,language):
     if movie_present(movie,project_folder):
         click.echo(click.style(f'The movie {movie} has already been reviewed', fg='red'))
         sys.exit(1)
+
+    # create a movie review post
+    template = {'layout': 'post','rating': 'change','title': title, 'language':language,'movie_name':movie ,
+                 'movie': ['change'],'cast-crew': {'change':'change'}, 'date':'change', 'image': 'change', 
+                 'author': author,'tags':['change']}
+
+    #collecting other data for info
+    # create a review file 
+    # create_review(project_folder,title,template)

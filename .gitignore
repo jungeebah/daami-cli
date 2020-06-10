@@ -1,3 +1,4 @@
-daami-cli
+__py*
 daami_cli.egg*
-__pyca*
+daami-cli
+*.md
