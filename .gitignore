@@ -2,3 +2,5 @@ __py*
 daami_cli.egg*
 daami-cli
 *.md
+dist
+build

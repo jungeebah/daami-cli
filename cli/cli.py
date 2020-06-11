@@ -5,6 +5,7 @@ import configparser
 import os
 import sys
 import re
+import requests
 import frontmatter
 from datetime import date
 import pprint
@@ -30,6 +31,7 @@ def create_review(project_folder,name,template):
 
 def prompt_result(answer):
     return prompt(answer)
+
 
 def google_search(movie_name,api_key, language,template):
     service = build("customsearch", "v1",
