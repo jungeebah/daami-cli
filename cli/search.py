@@ -3,7 +3,6 @@ from PyInquirer import prompt, print_json
 import re
 import os
 import requests
-import pprint
 import click
 from imdb import IMDb
 from bs4 import BeautifulSoup
