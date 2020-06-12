@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="daami-cli", # Replace with your own username
-    version="0.0.3",
+    version="0.0.4",
     author="DaamiReview",
     author_email="daamireview@gmail.com",
     description="cli to create additional things for daamireview",
@@ -20,7 +20,8 @@ setuptools.setup(
                     'wikipedia',
                     'configparser',
                     'python-frontmatter',
-                    'PyInquirer'],
+                    'PyInquirer',
+                    'imdbpy'],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
