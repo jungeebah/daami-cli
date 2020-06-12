@@ -70,17 +70,32 @@ def folder_Present(dir_name):
         return True
     return False
 
-def movie_certificate():
+def movie_certificate(language):
+    if language.lower() == 'korean':
+        choices = [
+            'G-General',
+            'PG_12-Age 12+',
+            'PG_15-Age 15+',
+            'R_18-Age 18+'
+        ]
+    elif language.lower() == 'hindi' or language.lower() == 'nepali':
+        choices = [
+            'U-Unrestricted',
+            'UA-Unrestricted with Caution',
+            'A-Adults',
+            'S-Restricted to special classes']
+    else:
+        choices = ['G–General Audiences',
+                   'PG–Parental Guidance Suggested',
+                   'PG_13–Parents Strongly Cautioned',
+                   'R–Restricted'
+                   'NC_17–Adults Only']
     movie_certi = [{
         'type': 'list',
         'name': 'mC',
         'message': 'Identify the movie Certificate',
-        'choices': [
-            'U-Unrestricted',
-            'UA-Unrestricted with Caution',
-            'A-Adults',
-            'S-Restricted to special classes'],
-            'filter': lambda val: val.split('-')[0]
+        'choices': choices,
+        'filter': lambda val: val.split('-')[0].replace('_','-')
 }]
     result = prompt(movie_certi)
     return result['mC']
@@ -108,7 +123,7 @@ def setup(project,api_key,author):
 @click.option('--title','-T', prompt=True, help='title of the article')
 @click.option('--movie','-m', prompt=True,help='Name of the movie being reviewed')
 @click.option('--language','-l', prompt=True,help='The language the movie is in')
-@click.option('--rating','-r',prompt=True,default=0,help='Your rating')
+@click.option('--rating','-r',prompt=True,default=0,help='Your rating',type=float)
 
 def review(title,movie,project,language,rating):
     ''' Generates the review file in the _post folder of the project'''
@@ -148,9 +163,9 @@ def review(title,movie,project,language,rating):
     a = Search(movie,api_key,language,template,project_folder)
     image,movie_info,cast_info = a.data()
     template['cast-crew'] = cast_info
-    movie_info['rating'] = movie_certificate()
+    movie_info['rating'] = movie_certificate(language)
     template['movie'] = movie_info
-    template['tags'].extend(movie_info['genres'])
+    template['tags'].extend(movie_info['genre'])
     template['rating'] = rating
     if image:
         template['image'] = f'/assets/images/{movie}.jpg'

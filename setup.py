@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="daami-cli", # Replace with your own username
-    version="0.0.4",
+    version="0.0.5",
     author="DaamiReview",
     author_email="daamireview@gmail.com",
     description="cli to create additional things for daamireview",

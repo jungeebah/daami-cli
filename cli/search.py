@@ -76,11 +76,11 @@ class Search:
         imdb_instance = IMDb()
         movie = imdb_instance.get_movie(movie_number)
         cast_crew = {}
-        cast_crew['starring'] = [x['name'] for x in movie['cast']]
-        cast_crew['director'] = [x['name'] for x in movie['directors']]
-        cast_crew['producer'] = [x['name'] for x in movie['producers']]
+        cast_crew['starring'] = [x['name'] for x in movie['cast'][:11]]
+        cast_crew['director'] = [x['name'] for x in movie['directors'][:11]]
+        cast_crew['producer'] = [x['name'] for x in movie['producers'][:11]]
         movie_info = {}
-        movie_info['genres'] = [x for x in movie['genres']]
+        movie_info['genre'] = [x for x in movie['genres']]
         length = movie['runtimes'][0]
         movie_info['length'] = f'{length} mins'
         return movie_info,cast_crew
