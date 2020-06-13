@@ -4,3 +4,4 @@ daami-cli
 *.md
 dist
 build
+*/__pycache__

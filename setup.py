@@ -1,11 +1,16 @@
 import setuptools
+import os 
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
+# __version__ comes into namespace from here
+with open(os.path.join("cli", "version.py")) as version_file:
+    exec(version_file.read())
+
 setuptools.setup(
     name="daami-cli", # Replace with your own username
-    version="0.0.5",
+    version=__version__,
     author="DaamiReview",
     author_email="daamireview@gmail.com",
     description="cli to create additional things for daamireview",
