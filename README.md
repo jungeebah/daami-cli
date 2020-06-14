@@ -12,7 +12,7 @@ For installation (Use virtualenv if possible)
 virtualenv daami
 source daami/bin/activate
 # for windows
-./daami/bin/activate.ps1
+.\daami\bin\activate.ps1 
 ```
 then install the package
 ```bash
@@ -25,6 +25,7 @@ For first time setup
 daami-cli setup 
 Project: (provide your daamireview folder path)
 Api key: (the api key )
+Tmdb key : (the tmdb key)
 Author: (your author name)
 ```
 Once done use review to create the review in _posts folder 
@@ -33,6 +34,7 @@ daami-cli review
 Title: (article title)
 Movie: (movie name being reviewed)
 Language: (the language the movie is in)
+Rating: (a floating num)
 ```
 
 
