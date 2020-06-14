@@ -6,6 +6,7 @@ certifi==2020.4.5.2
 chardet==3.0.4
 click==7.1.2
 configparser==5.0.0
+-e git+git@github.com:jungeebah/daami-cli.git@72a98e775156bb669d480a6b40ef24f420e83463#egg=daami_cli
 docutils==0.16
 google-api-core==1.20.0
 google-api-python-client==1.9.1

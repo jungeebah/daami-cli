@@ -27,7 +27,7 @@ setuptools.setup(
         "python-frontmatter",
         "PyInquirer",
         "IMDbPY",
-        "tqdm",
+        "tmdbsimple",
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
