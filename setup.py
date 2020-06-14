@@ -1,5 +1,5 @@
 import setuptools
-import os 
+import os
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -9,7 +9,7 @@ with open(os.path.join("cli", "version.py")) as version_file:
     exec(version_file.read())
 
 setuptools.setup(
-    name="daami-cli", # Replace with your own username
+    name="daami-cli",  # Replace with your own username
     version=__version__,
     author="DaamiReview",
     author_email="daamireview@gmail.com",
@@ -19,22 +19,23 @@ setuptools.setup(
     url="https://github.com/jungeebah/daami-cli.git",
     packages=setuptools.find_packages(),
     install_requires=[
-                    'Click',
-                    'pyaml',
-                    'google-api-python-client',
-                    'wikipedia',
-                    'configparser',
-                    'python-frontmatter',
-                    'PyInquirer',
-                    'imdbpy'],
+        "Click",
+        "pyaml",
+        "google-api-python-client",
+        "wikipedia",
+        "configparser",
+        "python-frontmatter",
+        "PyInquirer",
+        "imdbpy",
+    ],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    python_requires='>=3.6',
-    entry_points='''
+    python_requires=">=3.6",
+    entry_points="""
         [console_scripts]
         daami-cli=cli:cli
-    ''',
+    """,
 )
