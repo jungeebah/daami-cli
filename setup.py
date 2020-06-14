@@ -26,7 +26,8 @@ setuptools.setup(
         "configparser",
         "python-frontmatter",
         "PyInquirer",
-        "imdbpy",
+        "IMDbPY",
+        "tqdm",
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
