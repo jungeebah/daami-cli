@@ -32,10 +32,16 @@ def get_info(key):
         return
 
 
-def create_review(project_folder, name, template):
+def create_review(project_folder, name, template,trailer):
     review_date = date.today().strftime("%Y-%m-%d")
     template["date"] = review_date
-    post = frontmatter.Post("nothing", **template)
+    nl = '\n'
+    if trailer:
+        trailer_part = f'{{% youtube "{trailer}" %}}'
+        body = f'nothing {nl}{trailer_part}'
+    else:
+        body = 'nothing'
+    post = frontmatter.Post(body, **template)
     with open(
         os.path.join(project_folder, "_posts", review_date + "-" + name + ".md"), "w"
     ) as f:
@@ -253,6 +259,7 @@ def review(title, movie, project, language, rating):
         "tags": [language.title()],
     }
     movie_info = {}
+    trailer = None
     # collecting other data for info
     # searching imdb with google
     click.echo(click.style(f"Looking through imdb for movie {movie}", fg="green"))
@@ -263,6 +270,8 @@ def review(title, movie, project, language, rating):
     a = Tm(movie,imdb_id)
     image_tm,movie_info_tm = a.get_info()
     if movie_info_tm:
+        if movie_info_tm['trailer']:
+            trailer = movie_info_tm['trailer']
         movie_info["genre"] = movie_info_tm["genres"]
         length = movie_info_tm["runtime"]
         movie_info["length"] = f"{length} mins"
@@ -280,4 +289,4 @@ def review(title, movie, project, language, rating):
         download_image(image_im,project_folder,movie)
     template["image"] = f"/assets/images/{movie}.jpg"
     # create a review file
-    create_review(project_folder, title, template)
+    create_review(project_folder, title, template,trailer)

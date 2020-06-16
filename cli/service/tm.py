@@ -1,5 +1,7 @@
 import tmdbsimple as tmdb
 import configparser
+import requests
+import ast
 import os
 import sys
 import click
@@ -37,6 +39,18 @@ class Tm:
         search_string = self.tmdb.Search()
         movie_search = search_string.movie(query=self.movie)
         return search_string, movie_search
+        
+    def _get_trailer(self,id):
+        url = f'http://api.themoviedb.org/3/movie/{id}/videos?api_key={self.tmdb.API_KEY}'
+        result = requests.get(url).content
+        dict_result = result.decode("UTF-8")
+        info = ast.literal_eval(dict_result)
+        for video_list in info['results']:
+            if video_list and 'Trailer' in video_list['name']:
+                video_id = video_list['key']
+                return f'https://www.youtube.com/watch?v={video_id}'
+        return None
+
 
     def get_info(self):
         search_string, response = self._search()
@@ -45,6 +59,8 @@ class Tm:
         for r in search_string.results:
             data = self._movie_info(r["id"])
             if data["imdb_id"] == self.imdb_id:
+                if self._get_trailer(r["id"]):
+                    movie_info['trailer'] = self._get_trailer(r["id"])
                 poster = data['poster_path']
                 image_url = f'https://image.tmdb.org/t/p/original{poster}'
                 movie_info["genres"] = [x["name"] for x in data["genres"]]
