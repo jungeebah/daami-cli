@@ -80,7 +80,7 @@ def all_files(folder_name: str):
 def movie_present(movie_name: str, project_path: str):
     file_list = all_files(os.path.join(project_path, "_posts"))
     for file in file_list:
-        with open(file) as f:
+        with open(file,encoding="cp850") as f:
             movie_info = frontmatter.load(f)
             if movie_info["movie_name"].lower() == movie_name.lower():
                 return True
