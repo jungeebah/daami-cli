@@ -229,7 +229,7 @@ def review(title, movie, project, language, rating):
         )
         sys.exit(1)
     # checks to make sure the project folder has _posts
-    if not does_contain(project_folder, "_posts"):
+    if not does_contain(project_folder, "_posts") or not does_contain(project_folder, "assets"):
         click.echo(
             click.style(
                 "The project folder doesn't look like a jekyll project", fg="red"
@@ -247,6 +247,7 @@ def review(title, movie, project, language, rating):
     # create a movie review post
     template = {
         "layout": "post",
+        "spoiler": "False",
         "rating": "change",
         "title": title.title(),
         "language": language.capitalize(),
@@ -264,7 +265,7 @@ def review(title, movie, project, language, rating):
     # searching imdb with google
     click.echo(click.style(f"Looking through imdb for movie {movie}", fg="green"))
     a = Search(movie, api_key, language, template, project_folder)
-    image_im, movie_info_im, cast_info,imdb_id = a.data()
+    movie,image_im, movie_info_im, cast_info,imdb_id = a.data()
     ## looking through tmdb
     click.echo(click.style(f"Looking through tmdb for movie {movie}", fg="green"))
     a = Tm(movie,imdb_id)

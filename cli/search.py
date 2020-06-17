@@ -31,18 +31,18 @@ class Search:
 
     def _check_name_correction(self, data):
         if "spelling" in data:
-            corrected_query = data["spelling"]["correctedQuery"].replace(language, "")
-        correct_name = [
-            {
-                "type": "confirm",
-                "name": "changeMovieName",
-                "message": f"Instead of {self.movie_name} are you looking for {corrected_query}",
-                "default": False,
-            }
-        ]
-        answers = prompt(correct_name)
-        if answers:
-            return corrected_query.strip()
+            corrected_query = data["spelling"]["correctedQuery"].replace(self.movie_language, "")
+            correct_name = [
+                {
+                    "type": "confirm",
+                    "name": "changeMovieName",
+                    "message": f"Instead of {self.movie_name} are you looking for {corrected_query}",
+                    "default": False,
+                }
+            ]
+            answers = prompt(correct_name)
+            if answers:
+                return corrected_query.strip()
         return self.movie_name
 
     def _filter_result(self, data):
@@ -57,8 +57,9 @@ class Search:
         ]
         info = {}
         for item in data["items"]:
-            movie_result[0]["choices"].append(item["title"])
-            info[item["title"]] = item
+            if re.match(r'.*\s*\([0-9]{4}\)\s*\-\s*IMDb', item["title"]):
+                movie_result[0]["choices"].append(item["title"])
+                info[item["title"]] = item
         # add an option for if things don't match
         movie_result[0]["choices"].append("other")
         result = prompt(movie_result)
@@ -66,6 +67,9 @@ class Search:
             click.echo(click.style("Nothing from IMDb to use", fg="green"))
             return None
         else:
+            name = re.sub(r'\s*\([0-9]{4}\)\s*\-\s*IMDb','',result["movie_name"])
+            if name.lower() != self.movie_name.lower():
+                self.movie_name = name
             return info[result["movie_name"]]
             # template['movie_name'] = re.sub(r'\([0-9]{4}\)\s*\-\s*imdb','',result['movie_name']).title()
 
@@ -90,13 +94,14 @@ class Search:
 
     def data(self):
         data = self._imdb_search()
+        self.movie_name = self._check_name_correction(data)
         movie_data = self._filter_result(data)
         if movie_data:
             image_url = movie_data["pagemap"]["metatags"][0]["og:image"]
             movie_info, cast_info = self._crawl_imdb_info(
                 movie_data["pagemap"]["metatags"][0]["pageid"]
             )
-            if "og:image" in movie_data["pagemap"]["metatags"][0]:
-                return self._image_download(image_url), movie_info, cast_info,movie_data["pagemap"]["metatags"][0]["pageid"]
-            return False, movie_info, cast_info,movie_data["pagemap"]["metatags"][0]["pageid"]
-        return False,None,None,None
+            if "og:image" in movie_data["pagemap"]["metatags"][0] and self._image_download(image_url):
+                return self.movie_name,image_url, movie_info, cast_info,movie_data["pagemap"]["metatags"][0]["pageid"]
+            return self.movie_name,False, movie_info, cast_info,movie_data["pagemap"]["metatags"][0]["pageid"]
+        return self.movie_name,False,None,None,None
