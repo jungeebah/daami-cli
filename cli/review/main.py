@@ -5,6 +5,7 @@ import os
 from datetime import date
 from cli.service.search import Search
 from cli.service.tm import Tm
+from cli.picture.main import Im
 from PyInquirer import prompt
 
 
@@ -50,13 +51,16 @@ class Review:
         result = prompt(movie_certi)
         self.template["movie"]["rating"] = result["mC"]
 
-    def _download_image(self, image_url):
+    def _download_image(self, image_url,image_aspect_change):
         img_data = requests.get(image_url).content
         movie_name = self.template["movie_name"]
         with open(
             os.path.join(self.project, "assets", "images", f"{movie_name}.jpg"), "wb",
         ) as handler:
             handler.write(img_data)
+        if image_aspect_change:
+            image_convert = Im(os.path.join(self.project, "assets", "images", f"{movie_name}.jpg"))
+            image_convert.format_image()
 
     def _create_review(self, trailer):
         review_date = date.today().strftime("%Y-%m-%d")
@@ -92,11 +96,13 @@ class Review:
         if not rated:
             self._movie_certificate(self.template["language"])
 
+        image_aspect_change = False
         if self.template["image"] != "change":
             name = self.template["movie_name"]
             if 'tmdb' not in self.template['image']:
                 click.echo(click.style(f"The image {name}.jpg might need to be converted to 2:3 aspect ratio", fg="red"))
-            self._download_image(self.template["image"])
+                image_aspect_change = True
+            self._download_image(self.template["image"],image_aspect_change)
             self.template["image"] = os.path.join("/assets/images", f"{name}.jpg")
 
         self._create_review(trailer)
