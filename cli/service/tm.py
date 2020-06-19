@@ -67,9 +67,8 @@ class Tm:
                 poster = data["poster_path"]
                 if poster:
                     image_url = f"https://image.tmdb.org/t/p/original{poster}"
-                for k in self.template["movie"]:
-                    if "rating" in k:
-                        movie_info["rating"] = k["rating"]
+                if "rating" in self.template['movie']:
+                    movie_info["rating"] = self.template['movie']["rating"]
                 movie_info["genre"] = [x["name"] for x in data["genres"]]
                 run = data["runtime"]
                 movie_info["length"] = f"{run} mins"
