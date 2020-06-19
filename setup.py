@@ -28,6 +28,7 @@ setuptools.setup(
         "PyInquirer",
         "IMDbPY",
         "tmdbsimple",
+        "Pillow",
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
