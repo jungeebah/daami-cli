@@ -48,7 +48,7 @@ class Tm:
         info = ast.literal_eval(dict_result)
         for video_list in info["results"]:
             if video_list:
-                if "Trailer" in video_list["name"] or 'Promo' in video_list['name']:
+                if "Trailer" in video_list["name"] or "Promo" in video_list["name"]:
                     video_id = video_list["key"]
                     return f"https://www.youtube.com/watch?v={video_id}"
         return None
@@ -67,8 +67,8 @@ class Tm:
                 poster = data["poster_path"]
                 if poster:
                     image_url = f"https://image.tmdb.org/t/p/original{poster}"
-                if "rating" in self.template['movie']:
-                    movie_info["rating"] = self.template['movie']["rating"]
+                if "rating" in self.template["movie"]:
+                    movie_info["rating"] = self.template["movie"]["rating"]
                 movie_info["genre"] = [x["name"] for x in data["genres"]]
                 run = data["runtime"]
                 movie_info["length"] = f"{run} mins"

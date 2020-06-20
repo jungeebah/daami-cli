@@ -36,3 +36,11 @@ def all_files(folder_name: str):
         for x in os.listdir(folder_name)
         if os.path.isfile(os.path.join(folder_name, x))
     ]
+
+
+def all_folders(folder_name: str):
+    return [
+        os.path.join(folder_name, x)
+        for x in os.listdir(folder_name)
+        if os.path.isdir(os.path.join(folder_name, x))
+    ]

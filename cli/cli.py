@@ -98,7 +98,7 @@ def review(title, movie, language, rating):
         "title": title.title(),
         "language": language.capitalize(),
         "movie_name": movie.capitalize(),
-        "movie": ["change"],
+        "movie": {"change": "change"},
         "cast-crew": {"change": "change"},
         "date": "change",
         "image": "change",
@@ -107,3 +107,26 @@ def review(title, movie, language, rating):
     }
     review = Review(tmdb, api_key, template, project_folder)
     review.create()
+
+
+@cli.command()
+@click.option("--movie", "-m", help="Name of the movie to be deleted", type=str)
+@click.option("--date", "-d", help="delete all reviews from this date", type=str)
+def delete(movie):
+    ## get a list of all files in _posts
+    ## check if the project folder is a jekyll folder
+    project_folder = info.get_project()
+    if not validator.is_jekyll_site(project_folder):
+        click.echo(click.style("The project folder is not a jekyll folder", fg="red",))
+        sys.exit(1)
+
+    # check movie is present
+    if validator.movie_present(movie, project_folder):
+        all_posts = info.all_files(os.path.join(project_folder, "_posts"))
+        for fi in all_posts:
+            if movie in fi.lower():
+                os.remove(fi)
+        all_photos = info.all_files(os.path.join(project_folder, "assets/images"))
+        for fi in all_photos:
+            if movie in fi.lower():
+                os.remove(fi)
