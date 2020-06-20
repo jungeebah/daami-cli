@@ -36,6 +36,14 @@ Movie: (movie name being reviewed)
 Language: (the language the movie is in)
 Rating: (a floating num)
 ```
+To delete the posts use delete function
+```bash
+daami-cli delete -m balidaan
+# delete with date
+daami-cli delete -d 6/20/20
+# delete with since this will delete all files after a date
+daami-cli delete -s 5/18/20
+```
 
 
 

@@ -3,6 +3,7 @@ import click
 import cli.info as info
 import difflib
 import frontmatter
+import datetime
 from PyInquirer import prompt, print_json
 
 
@@ -12,6 +13,32 @@ def validate_rating(ctx, param, value) -> str:
     raise click.BadParameter(
         "Hold UP 0_o !!!! Your rating meter is above the roof. Roof being 10"
     )
+
+
+def validate_date(ctx, param, value) -> str:
+    if not value:
+        return value
+    if value.lower() == "today":
+        today = datetime.date.today()
+        value = today.strftime("%m/%d/%y")
+        return value
+    elif value.lower() == "yesterday":
+        yesterday = datetime.date.today() - datetime.timedelta(days=1)
+        value = yesterday.strftime("%m/%d/%y")
+        return value
+    else:
+        try:
+            given = datetime.datetime.strptime(value, "%m/%d/%y")
+            today = datetime.date.today().strftime("%m/%d/%y")
+            today_datetime = datetime.datetime.strptime(today, "%m/%d/%y")
+            if given <= today_datetime:
+                return value
+            raise click.BadParameter("Hold UP 0_o !!!! Bud y0UR too into the future!!!")
+        except ValueError:
+            print(ValueError)
+            raise click.BadParameter(
+                "Hold UP 0_o !!!! Your date should be in format mm/dd/yy or today or yesterday"
+            )
 
 
 def movie_present(movie_name: str, project_path: str) -> bool:

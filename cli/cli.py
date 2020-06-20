@@ -6,6 +6,7 @@ import configparser
 import click
 import cli.validator as validator
 import cli.info as info
+from datetime import datetime, date
 from cli.service.search import Search
 from cli.review.main import Review
 from cli.service.tm import Tm
@@ -111,8 +112,22 @@ def review(title, movie, language, rating):
 
 @cli.command()
 @click.option("--movie", "-m", help="Name of the movie to be deleted", type=str)
-@click.option("--date", "-d", help="delete all reviews from this date", type=str)
-def delete(movie):
+@click.option(
+    "--day",
+    "-d",
+    help="delete all reviews from this date format mm/dd/yy also takes today,yesterday",
+    type=str,
+    callback=validator.validate_date,
+)
+@click.option(
+    "--since",
+    "-s",
+    help="delete all reviews since this date format mm/dd/yy also takes today,yesterday",
+    type=str,
+    callback=validator.validate_date,
+)
+def delete(movie, day, since):
+    """Remove the review posts"""
     ## get a list of all files in _posts
     ## check if the project folder is a jekyll folder
     project_folder = info.get_project()
@@ -120,13 +135,29 @@ def delete(movie):
         click.echo(click.style("The project folder is not a jekyll folder", fg="red",))
         sys.exit(1)
 
+    to_delete = []
+    all_movie = info.all_images_posts(project_folder)
+    if day:
+        day_obj = datetime.strptime(day, "%m/%d/%y").date()
+        for movie_s in all_movie:
+            if movie_s["date"] == day_obj:
+                to_delete.append(movie_s["file"])
+                to_delete.append(os.path.join(project_folder, movie_s["image"][1:]))
+
+    elif since:
+        since_obj = datetime.strptime(since, "%m/%d/%y").date()
+        for movie_s in all_movie:
+            if movie_s["date"] >= since_obj:
+                to_delete.append(movie_s["file"])
+                to_delete.append(os.path.join(project_folder, movie_s["image"][1:]))
+
     # check movie is present
-    if validator.movie_present(movie, project_folder):
-        all_posts = info.all_files(os.path.join(project_folder, "_posts"))
-        for fi in all_posts:
-            if movie in fi.lower():
-                os.remove(fi)
-        all_photos = info.all_files(os.path.join(project_folder, "assets/images"))
-        for fi in all_photos:
-            if movie in fi.lower():
-                os.remove(fi)
+    elif movie:
+        if validator.movie_present(movie, project_folder):
+            for movie_s in all_movie:
+                if movie_s["name"].lower() == movie.lower():
+                    to_delete.append(movie_s["file"])
+                    to_delete.append(os.path.join(project_folder, movie_s["image"][1:]))
+
+    if to_delete:
+        info.delete_file(to_delete)

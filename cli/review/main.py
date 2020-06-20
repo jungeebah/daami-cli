@@ -68,7 +68,7 @@ class Review:
     def _create_review(self, trailer):
         review_date = date.today().strftime("%Y-%m-%d")
         name = self.template["movie_name"]
-        self.template["date"] = review_date
+        self.template["date"] = date.today()
         nl = "\n"
         if trailer:
             trailer_part = f'{{% youtube "{trailer}" %}}'
